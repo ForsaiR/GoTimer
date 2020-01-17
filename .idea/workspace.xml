@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b0b241f9-db8d-4054-bed8-3765843bdfee" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/awesomeProject1.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/restapiserver/controller/controller.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/restapiserver/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/restapiserver/service/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,6 +80,10 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Create first Go server" />
+    <option name="LAST_COMMIT_MESSAGE" value="Create first Go server" />
+  </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
     <proxy>direct</proxy>
@@ -99,10 +93,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="872" y="362" key="#Notifications/0.0.2560.1400@0.0.2560.1400" timestamp="1579261179427" />
-    <state x="1359" y="363" key="CommitChangelistDialog2" timestamp="1579280427074">
+    <state x="1359" y="363" key="CommitChangelistDialog2" timestamp="1579280458380">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1359" y="363" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1579280427074" />
+    <state x="1359" y="363" key="CommitChangelistDialog2/0.0.2560.1400@0.0.2560.1400" timestamp="1579280458380" />
     <state x="1062" y="458" key="FileChooserDialogImpl" timestamp="1579261401020">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
