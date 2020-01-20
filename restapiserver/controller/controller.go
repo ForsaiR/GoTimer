@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -40,8 +41,10 @@ func QueryProcessor() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/", startPage)
+	router.HandleFunc("/api/counter/start", getCounterValue).Methods("GET")
+	router.HandleFunc("/api/counter/stop", putStopCounter).Methods("POST")
+	router.HandleFunc("/api/counter/reset", putResetCounter).Methods("POST")
 	router.HandleFunc("/api/counter/value", getCounterValue).Methods("GET")
-	router.HandleFunc("/api/counter/reset", putCounterValue).Methods("PUT")
 
 	spa := spaHandler{staticPath: "build", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
@@ -61,12 +64,32 @@ func startPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello!")
 }
 
-//GET запрос для отправки значения счетчика
-func getCounterValue(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(map[string]int{"count": service.GetCount()})
+//POST запрос для запуска
+func putStartCounter(w http.ResponseWriter, r *http.Request) {
+	service.StartCounter()
+	json.NewEncoder(w).Encode(map[string]bool{"status": service.CounterStatus()})
 }
 
-//PUT запрос для установки значения счетчика 0
-func putCounterValue(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(map[string]bool{"status": service.ResetTimer()})
+//POST запрос для остановки счетчика
+func putStopCounter(w http.ResponseWriter, r *http.Request) {
+	service.StopCounter()
+	json.NewEncoder(w).Encode(map[string]bool{"status": service.CounterStatus()})
 }
+
+//POST запрос для установки значения счетчика 0 (перезапеск счетчика)
+func putResetCounter(w http.ResponseWriter, r *http.Request) {
+	service.ResetCounter()
+	json.NewEncoder(w).Encode(map[string]bool{"status": service.CounterStatus()})
+}
+
+//GET запрос для отправки значения счетчика
+func getCounterValue(w http.ResponseWriter, r *http.Request) {
+	var count int
+	var timeStamp time.Time
+	count, timeStamp = service.GetDataFromCounter()
+	json.NewEncoder(w).Encode(map[string]string{"count": strconv.Itoa(count), "timestamp": timeStamp.String()})
+}
+
+
+
+

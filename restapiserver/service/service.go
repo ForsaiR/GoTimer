@@ -6,13 +6,14 @@ import (
 )
 
 var instance *counter
+var ticker *time.Ticker
 var once sync.Once
-var counterGoRoutine bool
+var counterStatus bool
 
 //Счетчик
 type counter struct {
 	count      int
-	rebootFlag bool
+	timeStamp time.Time
 }
 
 //Функция для получения указателя на структуру
@@ -28,35 +29,68 @@ func GetCount() int {
 	return (*getInstance()).count
 }
 
-//Функция перезапуска таймера
-func ResetTimer() bool {
-	counterGoRoutine = true
-	return counterGoRoutine
-}
-
 //Функция для установки счетчика в значение count
 func setCount(count int) {
 	(*getInstance()).count = count
 }
 
-//Функция для изменения значения rebootFlag
-func setRebootFlag(flag bool) {
-	(*getInstance()).rebootFlag = flag
+//Функция для получения временной метки
+func GetTimeStamp() time.Time {
+	return (*getInstance()).timeStamp
+}
+
+//Функция для установки временной метки
+func setTimeStampNow() {
+	(*getInstance()).timeStamp = time.Now()
+}
+
+//Функция для установки временной метки
+func setTimeStamp(time time.Time) {
+	(*getInstance()).timeStamp = time
+}
+
+func GetDataFromCounter() (int, time.Time)  {
+	return (*getInstance()).count, (*getInstance()).timeStamp
+}
+
+//Таймер, увеличивает значение счетчика на 1
+func timer() {
+	timer := time.NewTicker(1 * time.Second)
+	setTimeStampNow()
+	count := 0
+	ticker = timer
+	for range timer.C {
+		count += 1
+		setCount(count)
+		setTimeStampNow()
+	}
 }
 
 //Запуск счетчика
 func StartCounter() {
-	if !counterGoRoutine {
-		go func() {
-			for i := 0; ; i += 1 {
-				if (*getInstance()).rebootFlag {
-					i = 0
-					setRebootFlag(false)
-				}
-				setCount(i)
-				time.Sleep(3000000000)
-			}
-		}()
+	if !counterStatus {
+		go timer()
 	}
-	counterGoRoutine = true
+	counterStatus = true
+}
+
+//Выключение счетчика
+func StopCounter() {
+	if ticker != nil {
+		ticker.Stop()
+		ticker = nil
+	}
+	counterStatus = false
+}
+
+//Перезапуск счетчика
+func ResetCounter() {
+	StopCounter()
+	setCount(0)
+	StartCounter()
+}
+
+//Получение состояния счетчика
+func CounterStatus() bool {
+	return counterStatus
 }
