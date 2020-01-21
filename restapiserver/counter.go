@@ -1,18 +1,19 @@
-package service
+package main
 
 import (
 	"sync"
 	"time"
 )
 
-var instance *counter
 var ticker *time.Ticker
+var countStatus bool
+var instance *counter
 var once sync.Once
-var counterStatus bool
+
 
 //Счетчик
 type counter struct {
-	count      int
+	count      *int
 	timeStamp time.Time
 }
 
@@ -25,72 +26,74 @@ func getInstance() *counter {
 }
 
 //Функция для получения значения счетчика
-func GetCount() int {
-	return (*getInstance()).count
+func (c *counter) getCount() int {
+	return *c.count
 }
 
 //Функция для установки счетчика в значение count
-func setCount(count int) {
-	(*getInstance()).count = count
+func (c *counter) setCount(count int) {
+	c.count = &count
 }
 
 //Функция для получения временной метки
-func GetTimeStamp() time.Time {
-	return (*getInstance()).timeStamp
+func (c *counter) getTimeStamp() time.Time {
+	return c.timeStamp
+}
+
+//Функция для установки временной метки (текущее время)
+func (c *counter) setTimeStampNow() {
+	c.timeStamp = time.Now()
 }
 
 //Функция для установки временной метки
-func setTimeStampNow() {
-	(*getInstance()).timeStamp = time.Now()
+func (c *counter) setTimeStamp(time time.Time) {
+	c.timeStamp = time
 }
 
-//Функция для установки временной метки
-func setTimeStamp(time time.Time) {
-	(*getInstance()).timeStamp = time
-}
-
-func GetDataFromCounter() (int, time.Time)  {
-	return (*getInstance()).count, (*getInstance()).timeStamp
+//Получение данных из счетчика
+func (c *counter) getDataFromCounter() (int, time.Time)  {
+	return c.getCount(), c.getTimeStamp()
 }
 
 //Таймер, увеличивает значение счетчика на 1
 func timer() {
 	timer := time.NewTicker(1 * time.Second)
-	setTimeStampNow()
+	(*getInstance()).setTimeStampNow()
 	count := 0
 	ticker = timer
 	for range timer.C {
 		count += 1
-		setCount(count)
-		setTimeStampNow()
+		(*getInstance()).setCount(count)
+		(*getInstance()).setTimeStampNow()
 	}
 }
 
 //Запуск счетчика
-func StartCounter() {
-	if !counterStatus {
+func startCounter() {
+	if !countStatus {
 		go timer()
 	}
-	counterStatus = true
+	countStatus = true
 }
 
 //Выключение счетчика
-func StopCounter() {
+func stopCounter() {
 	if ticker != nil {
 		ticker.Stop()
 		ticker = nil
 	}
-	counterStatus = false
+
+	countStatus = false
 }
 
 //Перезапуск счетчика
-func ResetCounter() {
-	StopCounter()
-	setCount(0)
-	StartCounter()
+func resetCounter() {
+	stopCounter()
+	(*getInstance()).setCount(0)
+	startCounter()
 }
 
 //Получение состояния счетчика
-func CounterStatus() bool {
-	return counterStatus
+func counterStatus() bool {
+	return countStatus
 }
