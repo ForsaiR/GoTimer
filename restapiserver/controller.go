@@ -16,20 +16,20 @@ func startPage(w http.ResponseWriter, r *http.Request) {
 }
 
 //POST запрос для запуска
-func putStartCounter(w http.ResponseWriter, r *http.Request) {
-	startCounter()
+func putStartCounter(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	hub.startCounter()
 	json.NewEncoder(w).Encode(map[string]bool{"status": counterStatus()})
 }
 
 //POST запрос для остановки счетчика
-func putStopCounter(w http.ResponseWriter, r *http.Request) {
-	stopCounter()
+func putStopCounter(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	hub.stopCounter()
 	json.NewEncoder(w).Encode(map[string]bool{"status": counterStatus()})
 }
 
 //POST запрос для установки значения счетчика 0 (перезапеск счетчика)
-func putResetCounter(w http.ResponseWriter, r *http.Request) {
-	resetCounter()
+func putResetCounter(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	hub.resetCounter()
 	json.NewEncoder(w).Encode(map[string]bool{"status": counterStatus()})
 }
 

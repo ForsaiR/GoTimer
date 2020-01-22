@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -55,29 +56,34 @@ func (c *counter) getDataFromCounter() (int, time.Time)  {
 	return c.getCount(), c.getTimeStamp()
 }
 
-//Таймер, увеличивает значение счетчика на 1
-func timer() {
+//Таймер, увеличивает значение счетчика на 1 и отправляет значение в хаб
+func (h *Hub) timer() {
 	timer := time.NewTicker(1 * time.Second)
 	(*getInstance()).setTimeStampNow()
 	count := 0
 	ticker = timer
+	fmt.Printf("count: %d\n", count)
+
+	h.broadcast <- count
 	for range timer.C {
 		count += 1
 		(*getInstance()).setCount(count)
 		(*getInstance()).setTimeStampNow()
+		h.broadcast <- count
+		fmt.Printf("count: %d\n", count)
 	}
 }
 
-//Запуск счетчика
-func startCounter() {
+//Запуск счетчика c передачей сообщения в сокет
+func (h *Hub) startCounter() {
 	if !countStatus {
-		go timer()
+		go h.timer()
 	}
 	countStatus = true
 }
 
 //Выключение счетчика
-func stopCounter() {
+func (h *Hub) stopCounter() {
 	if ticker != nil {
 		ticker.Stop()
 		ticker = nil
@@ -87,10 +93,10 @@ func stopCounter() {
 }
 
 //Перезапуск счетчика
-func resetCounter() {
-	stopCounter()
+func (h *Hub) resetCounter() {
+	h.stopCounter()
 	(*getInstance()).setCount(0)
-	startCounter()
+	h.startCounter()
 }
 
 //Получение состояния счетчика

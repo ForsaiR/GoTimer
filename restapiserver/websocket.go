@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
 	"strconv"
@@ -12,31 +13,37 @@ type Client struct {
 	send chan int
 }
 
-
-
 //Запись в веб-сокет
 func (c *Client) websocketWrite() {
 	defer func() {
-		ticker.Stop()
 		c.websocket.Close()
 	}()
 	for {
-		send := <- c.send
-		var message []byte = []byte("{\"count\":" + strconv.Itoa(send) + "\"}")
-		if err := c.websocket.WriteMessage(1, message); err != nil {
-			//TextMessage = 1 || BinaryMessage = 2 || CloseMessage = 8 || PingMessage = 9 || PongMessage = 10
-			log.Println(err)
+		select {
+		case message, ok := <-c.send:
+			if !ok {
+				c.websocket.WriteMessage(websocket.CloseMessage, []byte{})
+				return
+			}
+			var msg []byte = []byte("{\"count\":\"" + strconv.Itoa(message) + "\"}")
+
+			fmt.Printf("send: {\"count\":\"" + strconv.Itoa(message) + "\"}\n")	//Сообщение
+
+			if err := c.websocket.WriteMessage(1, msg); err != nil {
+				//TextMessage = 1 || BinaryMessage = 2 || CloseMessage = 8 || PingMessage = 9 || PongMessage = 10
+				log.Println(c.websocket.LocalAddr().String() + " - Exit")
+				c.hub.unregister <- c
+			}
 		}
 	}
 }
 
 //Чтение из веб-сокета
 func (c *Client) websocketRead() {
-	defer func() {
-		c.hub.unregister <- c
-		c.websocket.Close()
-	}()
-
+	//defer func() {
+	//	c.hub.unregister <- c
+	//	c.websocket.Close()
+	//}()
 }
 
 

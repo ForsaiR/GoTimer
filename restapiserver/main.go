@@ -34,16 +34,28 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 //Обработчик запросов
 func queryProcessor() {
-	startCounter()
 	hub := newHub()
+	hub.startCounter()
 	go hub.run()
 
 	router := mux.NewRouter()
+
 	router.HandleFunc("/", startPage)
-	router.HandleFunc("/api/counter/start", putStartCounter).Methods("GET")
-	router.HandleFunc("/api/counter/stop", putStopCounter).Methods("POST")
-	router.HandleFunc("/api/counter/reset", putResetCounter).Methods("POST")
+
+	router.HandleFunc("/api/counter/start", func(w http.ResponseWriter, r *http.Request) {
+		putStartCounter(hub, w, r)
+	}).Methods("GET")
+
+	router.HandleFunc("/api/counter/stop", func(w http.ResponseWriter, r *http.Request) {
+		putStopCounter(hub, w, r)
+	}).Methods("POST")
+
+	router.HandleFunc("/api/counter/reset", func(w http.ResponseWriter, r *http.Request) {
+		putResetCounter(hub, w, r)
+	}).Methods("POST")
+
 	router.HandleFunc("/api/counter/value", getCounterValue).Methods("GET")
+
 	router.HandleFunc("/api/counter/websocket", func(w http.ResponseWriter, r *http.Request) {
 		serveWebsocket(hub, w, r)
 	})
