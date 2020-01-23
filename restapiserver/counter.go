@@ -8,51 +8,51 @@ import (
 
 var ticker *time.Ticker
 var countStatus bool
-var instance *counter
+var instance *Counter
 var once sync.Once
 
 
 //Счетчик
-type counter struct {
-	count      *int
-	timeStamp time.Time
+type Counter struct {
+	Count      int
+	TimeStamp time.Time
 }
 
 //Функция для получения указателя на структуру
-func getInstance() *counter {
+func getInstance() *Counter {
 	once.Do(func() {
-		instance = &counter{}
+		instance = &Counter{}
 	})
 	return instance
 }
 
 //Функция для получения значения счетчика
-func (c *counter) getCount() int {
-	return *c.count
+func (c *Counter) getCount() int {
+	return c.Count
 }
 
 //Функция для установки счетчика в значение count
-func (c *counter) setCount(count int) {
-	c.count = &count
+func (c *Counter) setCount(count int) {
+	c.Count = count
 }
 
 //Функция для получения временной метки
-func (c *counter) getTimeStamp() time.Time {
-	return c.timeStamp
+func (c *Counter) getTimeStamp() time.Time {
+	return c.TimeStamp
 }
 
 //Функция для установки временной метки (текущее время)
-func (c *counter) setTimeStampNow() {
-	c.timeStamp = time.Now()
+func (c *Counter) setTimeStampNow() {
+	c.TimeStamp = time.Now()
 }
 
 //Функция для установки временной метки
-func (c *counter) setTimeStamp(time time.Time) {
-	c.timeStamp = time
+func (c *Counter) setTimeStamp(time time.Time) {
+	c.TimeStamp = time
 }
 
 //Получение данных из счетчика
-func (c *counter) getDataFromCounter() (int, time.Time)  {
+func (c *Counter) getDataFromCounter() (int, time.Time)  {
 	return c.getCount(), c.getTimeStamp()
 }
 
@@ -70,7 +70,7 @@ func (h *Hub) timer() {
 		(*getInstance()).setCount(count)
 		(*getInstance()).setTimeStampNow()
 		h.broadcast <- count
-		fmt.Printf("count: %d\n", count)
+		fmt.Printf("count: %d\n", (*getInstance()).Count)
 	}
 }
 
